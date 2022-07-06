@@ -23,7 +23,7 @@ func Start(host string, port int) {
 	router.HandleFunc("/name/{PARAM}", NameHandler).Methods("GET")
 	router.HandleFunc("/bad", BadHandler).Methods("GET")
 	router.HandleFunc("/data", DataHandler).Methods("POST")
-	//router.HandleFunc("/headers", HeaderHandler).Methods("POST")
+	router.HandleFunc("/headers", HeadersHandler).Methods("POST")
 
 	log.Println(fmt.Printf("Starting API server on %s:%d\n", host, port))
 	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), router); err != nil {
@@ -45,7 +45,15 @@ func DataHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "I got message:\n%s", body)
+}
+
+func HeadersHandler(w http.ResponseWriter, r *http.Request) {
+	a, _ := strconv.Atoi(r.Header.Get("a"))
+	b, _ := strconv.Atoi(r.Header.Get("b"))
+
+	w.Header().Set("a+b", strconv.Itoa(a+b))
 }
 
 //main /** starts program, gets HOST:PORT param and calls Start func.
